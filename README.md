@@ -2,6 +2,12 @@
 
 This project demonstrates an end-to-end serverless data processing pipeline on AWS. The process involves ingesting raw data into S3, using a Lambda function to process it, cataloging the data with AWS Glue, and finally, querying and visualizing the results on a dynamic webpage hosted on an EC2 instance.
 
+# Explanations:
+
+This assignment demonstrates how to build an end-to-end serverless data processing pipeline on AWS. Raw order data is ingested into an S3 bucket, automatically processed by a Lambda function, cataloged using AWS Glue, and queried with Amazon Athena. The results are then visualized through a Flask web application hosted on an EC2 instance, showcasing how multiple AWS services can be integrated to form a complete cloud-based data pipeline.
+
+# Approach: 
+
 ## 1. Amazon S3 Bucket Structure 🪣
 
 First, set up an S3 bucket with the following folder structure to manage the data workflow:
@@ -11,7 +17,7 @@ First, set up an S3 bucket with the following folder structure to manage the dat
     * **`processed/`**: For cleaned and filtered data output by the Lambda function.
     * **`enriched/`**: For storing athena query results.
 
----
+![S3](/screenshots/S3.png)
 
 ## 2. IAM Roles and Permissions 🔐
 
@@ -27,6 +33,8 @@ Create the following IAM roles to grant AWS services the necessary permissions t
     * `AmazonS3FullAccess`
 5.  Give the role a descriptive name (e.g., `Lambda-S3-Processing-Role`) and create it.
 
+![IAM-1](/screenshots/IAM-1.png)
+
 ### Glue Service Role
 
 1.  Create another IAM role for **AWS service** with the use case **Glue**.
@@ -36,6 +44,9 @@ Create the following IAM roles to grant AWS services the necessary permissions t
     * `AWSGlueServiceRole`
 3.  Name the role (e.g., `Glue-S3-Crawler-Role`) and create it.
 
+![IAM-2](/screenshots/IAM-2.png)
+
+
 ### EC2 Instance Profile
 
 1.  Create a final IAM role for **AWS service** with the use case **EC2**.
@@ -44,7 +55,7 @@ Create the following IAM roles to grant AWS services the necessary permissions t
     * `AmazonAthenaFullAccess`
 3.  Name the role (e.g., `EC2-Athena-Dashboard-Role`) and create it.
 
----
+![IAM-3](/screenshots/IAM-3.png)
 
 ## 3. Create the Lambda Function ⚙️
 
@@ -59,7 +70,7 @@ This function will automatically process files uploaded to the `raw/` S3 folder.
 7.  Click **Create function**.
 8.  In the **Code source** editor, replace the default code with LambdaFunction.py code for processing the raw data.
 
----
+![Lambda](/screenshots/Lambda.png)
 
 ## 4. Configure the S3 Trigger ⚡
 
@@ -72,6 +83,8 @@ Set up the S3 trigger to invoke your Lambda function automatically.
 5.  **Prefix (Required)**: Enter `raw/`. This ensures the function only triggers for files in this folder.
 6.  **Suffix (Recommended)**: Enter `.csv`.
 7.  Check the acknowledgment box and click **Add**.
+   
+![Trigger](/screenshots/Trigger.png)
 
 --- 
 **Start Processing of Raw Data**: Now upload the Orders.csv file into the `raw/` folder of the S3 Bucket. This will automatically trigger the Lambda function.
@@ -89,6 +102,10 @@ The crawler will scan your processed data and create a data catalog, making it q
 6.  **Output**: Click **Add database** and create a new database named `orders_db`.
 7.  Finish the setup and run the crawler. It will create a new table in your `orders_db` database.
 
+![ProcessedCSV](/screenshots/ProcessedCSV.png)
+
+![Crawler](/screenshots/Crawler.png)
+
 ---
 
 ## 6. Query Data with Amazon Athena 🔍
@@ -101,6 +118,8 @@ Navigate to the **Athena** service. Ensure your data source is set to `AwsDataCa
 * **Order Status Dashboard**: Summarize orders based on their status (`shipped` vs. `confirmed`).
 * **Average Order Value (AOV) per Customer**: Find the average amount spent per order for each customer.
 * **Top 10 Largest Orders in February 2025**: Retrieve the highest-value orders from a specific month.
+
+![Athena](/screenshots/Athena.png)
 
 ---
 
@@ -182,8 +201,11 @@ Once connected via SSH, run the following commands to install the necessary soft
 2.  Open a web browser and navigate to your instance's public IP address on port 5000:
     ```
     http://YOUR_PUBLIC_IP_ADDRESS:5000
+
     ```
     You should now see your Athena Orders Dashboard!
+
+![Webpage](/screenshots/Webpage.png)
 
 ---
 
